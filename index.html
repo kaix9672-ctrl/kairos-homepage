@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="kairos-api" content="https://kairos-backend-9i4a.onrender.com" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KAIROS — quiet operational vigilance for property</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200;0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=Spline+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0d1011; --ink2:#11161a; --panel:#151a1e; --panel2:#1a2025;
+    --line:#262d33; --line2:#323b42;
+    --fog:#828d95; --mist:#aab3b9; --bone:#eef1f2; --white:#fbfcfc;
+    --sage:#80b6a6;        /* active / sentinel */
+    --brass:#c6a96b;       /* provisional / attention */
+    --warm:#c2855a;        /* needs review (never red) */
+    --weak:#586169;
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Spline Sans',ui-sans-serif,system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink); color:var(--bone); font-family:var(--sans);
+    font-weight:300; line-height:1.6; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1100px 520px at 78% -8%, #161d22 0%, var(--ink) 55%);
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+  .narrow{max-width:760px}
+  h1,h2,h3{font-family:var(--serif);font-weight:300;letter-spacing:-.01em;line-height:1.08}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--sage);text-transform:uppercase}
+  a{color:inherit;text-decoration:none}
+
+  /* nav */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(13,16,17,.72);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;max-width:1080px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-size:21px;letter-spacing:.16em}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--sage);box-shadow:0 0 13px var(--sage);animation:breathe 3.6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+  .nav-links{display:flex;gap:30px;align-items:center;font-size:14px;color:var(--mist)}
+  .nav-links a{transition:color .25s}.nav-links a:hover{color:var(--white)}
+  .nav-cta{border:1px solid var(--line2);border-radius:7px;padding:9px 16px;transition:all .25s}
+  .nav-cta:hover{border-color:var(--sage);color:var(--white)}
+  @media(max-width:720px){.nav-links a:not(.nav-cta){display:none}}
+
+  /* buttons */
+  .btn{font-family:var(--sans);font-size:14.5px;letter-spacing:.02em;border-radius:8px;
+    padding:14px 26px;cursor:pointer;border:1px solid transparent;transition:all .28s;display:inline-block}
+  .btn-primary{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+  .btn-primary:hover{background:var(--white);transform:translateY(-1px);box-shadow:0 8px 30px rgba(128,182,166,.13)}
+  .btn-ghost{background:transparent;color:var(--mist);border-color:var(--line2)}
+  .btn-ghost:hover{border-color:var(--fog);color:var(--white)}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  section{padding:96px 0;border-bottom:1px solid var(--line)}
+  .lede{font-size:19px;color:var(--mist);line-height:1.65}
+
+  /* hero */
+  .hero{padding:190px 0 110px;border-bottom:1px solid var(--line);position:relative}
+  .hero h1{font-size:clamp(40px,6.4vw,68px)}
+  .hero .lede{max-width:540px;margin-top:26px;font-size:20px}
+  .hero-actions{display:flex;gap:14px;align-items:center;margin-top:42px;flex-wrap:wrap}
+  .hero-note{margin-top:15px;color:var(--fog);font-size:13.5px}
+
+  /* canonical hero copy */
+  .hero-lead{font-family:var(--serif);font-weight:300;font-size:clamp(30px,4.4vw,46px);
+    line-height:1.16;letter-spacing:-.01em;max-width:880px;color:var(--bone)}
+  .hero-staccato{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px 22px;max-width:760px}
+  .hero-staccato span{font-family:var(--mono);font-size:13.5px;letter-spacing:.04em;color:var(--mist);
+    position:relative;padding-left:16px}
+  .hero-staccato span:before{content:'';position:absolute;left:0;top:8px;width:5px;height:5px;
+    border-radius:50%;background:var(--sage);opacity:.7}
+  .hero-sub{margin-top:32px;max-width:640px;font-size:18px;line-height:1.65;color:var(--mist)}
+
+  /* closing statement */
+  .closing{padding:130px 0 90px;border-bottom:none;text-align:center}
+  .closing .line{font-family:var(--serif);font-weight:200;font-size:clamp(26px,3.4vw,38px);
+    line-height:1.5;letter-spacing:.01em;color:var(--mist)}
+  .closing .line .soft{display:block;color:var(--fog)}
+  .sentinel-field{position:absolute;right:-40px;top:140px;width:380px;height:380px;pointer-events:none;opacity:.5}
+
+  /* the line */
+  .promise{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:30px 32px}
+  .promise .q{font-family:var(--serif);font-size:23px;line-height:1.5;color:var(--mist)}
+  .promise .q b{color:var(--white);font-weight:400}
+
+  /* three pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
+  .pillar{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:26px;transition:border-color .3s,transform .3s}
+  .pillar:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .pillar .ic{color:var(--sage);font-size:15px;margin-bottom:13px}
+  .pillar h3{font-size:19px;margin-bottom:9px}
+  .pillar p{color:var(--fog);font-size:14px}
+  @media(max-width:720px){.pillars{grid-template-columns:1fr}.sentinel-field{display:none}}
+
+  /* scan demo */
+  .scan-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .scan-head{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .addr-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .addr-in{background:var(--ink2);border:1px solid var(--line2);color:var(--bone);border-radius:9px;
+    padding:14px 16px;font-size:15px;font-family:var(--sans);outline:none;min-width:280px;flex:1;transition:border-color .25s}
+  .addr-in:focus{border-color:var(--sage)}
+  .privacy{display:flex;gap:9px;align-items:flex-start;color:var(--mist);font-size:13px;line-height:1.6;
+    background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:15px 17px;margin-bottom:18px}
+  .privacy .pin{color:var(--sage);margin-top:1px}
+  .scan-body{padding:24px}
+  .loading-wrap{padding:20px 4px}
+  .lbar{position:relative;height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:26px}
+  .lbar:after{content:'';position:absolute;inset:0;width:40%;background:linear-gradient(90deg,transparent,var(--sage),transparent);animation:slide 1.4s ease-in-out infinite}
+  @keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+  .lstep{display:flex;gap:11px;align-items:center;padding:8px 0;color:var(--fog);font-size:14px;transition:color .4s,opacity .4s}
+  .lstep.done{color:var(--mist)}.lstep .s{color:var(--sage)}
+
+  /* category rows */
+  .cats{display:grid;gap:11px}
+  .cat{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:18px 20px;cursor:pointer;transition:border-color .25s}
+  .cat:hover{border-color:var(--line2)}
+  .cat-top{display:flex;align-items:center;gap:13px}
+  .cat-strength{font-size:15px}
+  .s-active{color:var(--sage)}.s-prov{color:var(--brass)}.s-weak{color:var(--weak)}
+  .cat-name{font-family:var(--serif);font-size:18.5px;flex:1}
+  .cat-flag{font-family:var(--mono);font-size:10px;color:var(--fog);border:1px solid var(--line2);border-radius:4px;padding:2px 7px}
+  .cat-expl{color:var(--mist);font-size:14px;margin-top:9px;line-height:1.6}
+  .cat-detail{margin-top:13px;padding-top:13px;border-top:1px solid var(--line);display:none}
+  .cat.open .cat-detail{display:block}
+  .cat-line{margin-bottom:9px}
+  .cat-line .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--fog);margin-bottom:3px}
+  .cat-line.sowhat .k{color:var(--sage)}
+  .cat-line .v{color:var(--mist);font-size:13.5px;line-height:1.55}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;border-radius:3px;padding:1px 6px;white-space:nowrap}
+  .t-verified{color:var(--sage);border:1px solid var(--sage)}
+  .t-approx{color:var(--brass);border:1px solid var(--brass)}
+  .t-needed{color:var(--warm);border:1px solid var(--warm)}
+
+  /* what we monitor grid */
+  .monitor-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px}
+  .mon{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:22px}
+  .mon h3{font-size:18px;margin-bottom:7px;display:flex;align-items:center;gap:10px}
+  .mon h3 .n{font-family:var(--mono);font-size:12px;color:var(--sage)}
+  .mon p{color:var(--fog);font-size:13.5px;line-height:1.55}
+  @media(max-width:720px){.monitor-grid{grid-template-columns:1fr}}
+
+  /* digest preview */
+  .digest{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:620px;margin:30px auto 0}
+  .digest .dh{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--fog)}
+  .digest .dt{font-family:var(--serif);font-size:22px;margin:11px 0 4px;line-height:1.4}
+  .digest .ds{color:var(--mist);font-size:15px;margin-bottom:18px}
+  .drow{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .drow .di{margin-top:1px}
+  .drow .dn{color:var(--bone);font-size:14px}
+  .drow .dl{color:var(--fog);font-size:12.5px;margin-top:2px}
+  .drow .dstat{font-family:var(--mono);font-size:11px;white-space:nowrap}
+  .ok{color:var(--sage)}.attn{color:var(--warm)}.wait{color:var(--brass)}
+  .watched{margin-top:18px;padding:14px;background:var(--ink2);border-radius:8px;color:var(--fog);font-size:12.5px;line-height:1.6}
+  .watched b{color:var(--mist)}
+
+  /* don't do */
+  .dont{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:30px}
+  .dont ul{list-style:none}
+  .dont li{padding:11px 0;border-bottom:1px solid var(--line);color:var(--mist);font-size:15px;display:flex;gap:10px;align-items:baseline}
+  .dont .do li:before{content:'+';color:var(--sage);font-family:var(--mono)}
+  .dont .not li:before{content:'—';color:var(--weak);font-family:var(--mono)}
+  .dont h3{font-size:20px;margin-bottom:8px}
+  @media(max-width:720px){.dont{grid-template-columns:1fr;gap:24px}}
+
+  /* pricing */
+  .prices{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:30px}
+  .price{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;transition:border-color .3s,transform .3s}
+  .price:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .price.feature{border-color:var(--sage)}
+  .price .pn{font-family:var(--serif);font-size:20px}
+  .price .pr{color:var(--fog);font-size:12.5px;margin:3px 0 14px}
+  .price .pp{font-family:var(--serif);font-size:27px}
+  .price .pp small{font-size:13px;color:var(--fog)}
+  @media(max-width:720px){.prices{grid-template-columns:1fr 1fr}}
+
+  .pricing-note{color:var(--fog);font-size:13.5px;margin-top:20px;max-width:560px;line-height:1.6}
+
+  /* footer */
+  footer{padding:50px 0 60px;text-align:center}
+  footer .fl{color:var(--mist);font-size:14px;line-height:1.9;max-width:600px;margin:0 auto}
+  footer .fm{font-family:var(--mono);font-size:11.5px;color:var(--fog);margin-top:14px}
+
+  .center{text-align:center}
+  .mt-cta{margin-top:34px}
+  h2.section-title{font-size:clamp(28px,4vw,40px);margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <div class="brand"><span class="dot"></span>KAIROS</div>
+    <div class="nav-links">
+      <a href="#monitor">What we watch</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#scan" class="nav-cta">Run a free scan</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <svg class="sentinel-field" viewBox="0 0 380 380">
+      <circle cx="190" cy="190" r="60" fill="none" stroke="#80b6a6" stroke-width="1" opacity=".5"/>
+      <circle cx="190" cy="190" r="110" fill="none" stroke="#80b6a6" stroke-width="1" opacity=".28"/>
+      <circle cx="190" cy="190" r="160" fill="none" stroke="#80b6a6" stroke-width="1" opacity=".14"/>
+      <circle cx="190" cy="190" r="4" fill="#80b6a6"/>
+    </svg>
+    <div class="eyebrow reveal in">Quiet operational vigilance for property</div>
+    <div class="hero-lead reveal in" style="margin-top:24px;transition-delay:.05s">KAIROS watches the operational signals most property owners never see until they become expensive.</div>
+    <div class="hero-staccato reveal in" style="transition-delay:.13s">
+      <span>Flood maps</span>
+      <span>Insurance pressure</span>
+      <span>Reassessments</span>
+      <span>STR compliance</span>
+      <span>Filing deadlines</span>
+      <span>Carrier movement</span>
+    </div>
+    <p class="hero-sub reveal in" style="transition-delay:.2s">
+      A quiet intelligence layer for homeowners, investors, businesses, coastal properties,
+      and condo-hotel ownership — continuously monitoring what changes around your property
+      before it becomes your problem.
+    </p>
+    <div class="hero-actions reveal in" style="transition-delay:.27s">
+      <a href="#scan" class="btn btn-primary">Run a free baseline scan</a>
+      <a href="#how" class="btn btn-ghost">See how it works</a>
+    </div>
+  </div>
+</header>
+
+<!-- PROBLEM -->
+<section>
+  <div class="wrap narrow">
+    <div class="eyebrow reveal">The problem</div>
+    <h2 class="section-title reveal" style="margin-top:14px">Most surprises at renewal were visible months earlier.</h2>
+    <p class="lede reveal">
+      A flood map gets redrawn. An assessment cycle resets. A carrier quietly pulls back.
+      An entity filing lapses. None of it announces itself — until it lands on a renewal
+      you can no longer change. By then, the window to act has usually closed.
+    </p>
+    <div class="promise reveal" style="margin-top:34px">
+      <div class="q">Enter your property. <b>We identify what deserves watching.</b>
+      We quietly monitor it. <b>We tell you only when it matters.</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- THREE PILLARS -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow reveal">What KAIROS is</div>
+    <h2 class="section-title reveal" style="margin-top:14px">We watch the conditions you don't have time to.</h2>
+    <div class="pillars">
+      <div class="pillar reveal"><div class="ic">●</div><h3>Monitored continuously</h3>
+        <p>Not a one-time report. Conditions change, and so does what we're watching for you.</p></div>
+      <div class="pillar reveal" style="transition-delay:.08s"><div class="ic">◐</div><h3>Surfaced before renewal</h3>
+        <p>The whole point is timing. We bring conditions forward while you can still act on them.</p></div>
+      <div class="pillar reveal" style="transition-delay:.16s"><div class="ic">○</div><h3>Organized for clarity</h3>
+        <p>Verified facts, estimates, and open questions — kept separate, so you always know what you're looking at.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCAN (interactive) -->
+<section id="scan">
+  <div class="wrap narrow">
+    <div class="eyebrow reveal">The free baseline scan</div>
+    <h2 class="section-title reveal" style="margin-top:14px">Start with your property.</h2>
+    <p class="lede reveal" style="margin-bottom:26px">
+      Enter an address and KAIROS runs a baseline scan against public flood, assessment,
+      ownership, and entity records — then shows you what's worth watching before renewal.
+    </p>
+
+    <div class="privacy reveal">
+      <span class="pin">◆</span>
+      <span>Your address is used only to run your scan against <b style="color:var(--bone)">public records</b> — the kind anyone
+      can look up, organized in one place. No account or payment needed to see your scan. We don't sell your data. We don't share it. Ever.</span>
+    </div>
+
+    <div class="scan-card reveal">
+      <div class="scan-head">
+        <div class="addr-row" style="width:100%">
+          <input class="addr-in" id="addr" placeholder="5445 Collins Ave, Miami Beach, FL 33140" />
+          <button class="btn btn-primary" id="runBtn" onclick="runScan()">Run my scan</button>
+        </div>
+      </div>
+      <div class="scan-body" id="scanBody">
+        <div style="color:var(--fog);font-size:13.5px;text-align:center;padding:18px 0">
+          Try the demo with the address above — it runs the real activation logic on a verified Miami Beach condo-hotel unit.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE MONITOR -->
+<section id="monitor">
+  <div class="wrap">
+    <div class="eyebrow reveal">What we monitor</div>
+    <h2 class="section-title reveal" style="margin-top:14px">Seven operational clocks. We watch the ones that are live for your property.</h2>
+    <p class="lede reveal narrow">Not every property needs every category. The scan decides which are genuinely live — and KAIROS will tell you when there aren't enough to be worth watching.</p>
+    <div class="monitor-grid">
+      <div class="mon reveal"><h3><span class="n">01</span> Flood / FEMA</h3><p>FEMA map revisions, zone and elevation changes, pending maps — anything that can reset flood-insurance rating before a carrier flags it.</p></div>
+      <div class="mon reveal" style="transition-delay:.05s"><h3><span class="n">02</span> Recertification / Structural</h3><p>Milestone inspections, reserve studies, and special-assessment notices on older buildings — the costs that hit owners with little warning.</p></div>
+      <div class="mon reveal" style="transition-delay:.1s"><h3><span class="n">03</span> Insurance renewal</h3><p>Carrier withdrawals, rate actions, and renewal windows in high-risk markets — surfaced ahead of the renewal, not at it.</p></div>
+      <div class="mon reveal" style="transition-delay:.15s"><h3><span class="n">04</span> Entity compliance</h3><p>For LLC- and entity-owned property: registration status and annual-filing windows, so an ownership entity never lapses unnoticed.</p></div>
+      <div class="mon reveal"><h3><span class="n">05</span> Tax / assessment</h3><p>Assessment shifts and appeal windows that feed insured-value adequacy and budgeting.</p></div>
+      <div class="mon reveal" style="transition-delay:.05s"><h3><span class="n">06</span> Ownership / transactions</h3><p>New deeds, mortgages, and liens recorded against the property — and the obligations they can carry.</p></div>
+      <div class="mon reveal" style="transition-delay:.1s"><h3><span class="n">07</span> Use / occupancy</h3><p>Whether actual use (such as short-term rental) matches how the property is insured — a gap that surfaces at claim time.</p></div>
+      <div class="mon reveal" style="transition-delay:.15s;background:var(--ink2);border-style:dashed"><h3 style="color:var(--mist)">The discipline</h3><p>A category only activates on verified facts. Most months, most stay stable — and we say so. That confirmed quiet is the work.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap narrow">
+    <div class="eyebrow reveal">How it works</div>
+    <h2 class="section-title reveal" style="margin-top:14px">Four quiet steps.</h2>
+    <div class="cats" style="margin-top:24px">
+      <div class="cat reveal" style="cursor:default"><div class="cat-top"><span class="cat-strength s-active">1</span><span class="cat-name">Scan</span></div><div class="cat-expl">Enter an address. See your baseline watch points in minutes.</div></div>
+      <div class="cat reveal" style="cursor:default;transition-delay:.05s"><div class="cat-top"><span class="cat-strength s-active">2</span><span class="cat-name">Unlock</span></div><div class="cat-expl">Add your email to open the full scan and a sample monitoring report. Yours to keep.</div></div>
+      <div class="cat reveal" style="cursor:default;transition-delay:.1s"><div class="cat-top"><span class="cat-strength s-active">3</span><span class="cat-name">Monitor</span></div><div class="cat-expl">Subscribe, and KAIROS watches your property's live conditions continuously.</div></div>
+      <div class="cat reveal" style="cursor:default;transition-delay:.15s"><div class="cat-top"><span class="cat-strength s-active">4</span><span class="cat-name">Digest</span></div><div class="cat-expl">Each month: what was monitored, what changed, what stayed stable, what's coming before renewal.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIGEST PREVIEW -->
+<section>
+  <div class="wrap narrow center">
+    <div class="eyebrow reveal">The monthly digest</div>
+    <h2 class="section-title reveal" style="margin-top:14px">What you receive every month.</h2>
+    <p class="lede reveal" style="margin:0 auto">The recurring value isn't the scan — it's the calendar. A calm monthly account that makes quiet vigilance visible.</p>
+  </div>
+  <div class="wrap">
+    <div class="digest reveal">
+      <div class="dh">MONITORING DIGEST · CASTLE BEACH CLUB — UNIT 1001</div>
+      <div class="dt">KAIROS checked seven operational conditions this month.</div>
+      <div class="ds">Six remain stable. One needs your attention.</div>
+      <div class="drow"><span class="di ok">✓</span><div style="flex:1"><div class="dn">Flood / FEMA</div><div class="dl">Panel stable; no map change this month.</div></div><span class="dstat ok">No change</span></div>
+      <div class="drow"><span class="di attn">⚠</span><div style="flex:1"><div class="dn">Insurance renewal</div><div class="dl">Confirm your policy form matches short-term-rental use.</div></div><span class="dstat attn">Needs review</span></div>
+      <div class="drow"><span class="di ok">✓</span><div style="flex:1"><div class="dn">Recertification</div><div class="dl">No new building or association notice.</div></div><span class="dstat ok">No change</span></div>
+      <div class="drow"><span class="di ok">✓</span><div style="flex:1"><div class="dn">Entity compliance</div><div class="dl">LLC active; annual filing window noted.</div></div><span class="dstat ok">No change</span></div>
+      <div class="drow"><span class="di wait">◐</span><div style="flex:1"><div class="dn">Use / occupancy</div><div class="dl">Confirm whether the unit is currently listed.</div></div><span class="dstat wait">Awaiting you</span></div>
+      <div class="watched"><b>What KAIROS watched this month:</b> every condition above was checked against public records — including the quiet ones. A condition reaches you immediately only if a verified fact verifiably changes; everything else waits for this calm monthly note.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE DON'T DO -->
+<section>
+  <div class="wrap narrow">
+    <div class="eyebrow reveal">Plainly</div>
+    <h2 class="section-title reveal" style="margin-top:14px">What we do, and what we don't.</h2>
+    <div class="dont">
+      <div class="reveal"><h3>What KAIROS does</h3><ul class="do">
+        <li>Monitors public operational conditions on your property</li>
+        <li>Surfaces renewal-risk conditions before renewal</li>
+        <li>Keeps verified facts separate from estimates</li>
+        <li>Delivers a calm monthly proof-of-work digest</li>
+      </ul></div>
+      <div class="reveal" style="transition-delay:.08s"><h3>What KAIROS does not do</h3><ul class="not">
+        <li>We do not predict the future</li>
+        <li>We do not place insurance</li>
+        <li>We do not sell your data</li>
+        <li>We do not guarantee savings</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow reveal">Pricing</div>
+    <h2 class="section-title reveal" style="margin-top:14px">Quietly valuable. Easy to keep.</h2>
+    <div class="prices">
+      <div class="price feature reveal"><div class="pn">Starter</div><div class="pr">1–3 properties</div><div class="pp">$39<small>/mo</small></div></div>
+      <div class="price reveal" style="transition-delay:.05s"><div class="pn">Standard</div><div class="pr">4–15 properties</div><div class="pp">$149<small>/mo</small></div></div>
+      <div class="price reveal" style="transition-delay:.1s"><div class="pn">Professional</div><div class="pr">15–50 properties</div><div class="pp">$599<small>/mo</small></div></div>
+      <div class="price reveal" style="transition-delay:.15s"><div class="pn">Portfolio</div><div class="pr">50+ properties</div><div class="pp" style="font-size:18px;color:var(--mist)">Custom</div></div>
+    </div>
+    <p class="pricing-note reveal">Less than the cost of one avoidable surprise. Visible pricing, monthly, cancel anytime — and if your property doesn't have enough live conditions to be worth watching, we'll tell you that instead of selling you a plan.</p>
+    <div class="center mt-cta reveal"><a href="#scan" class="btn btn-primary">Run a free baseline scan</a></div>
+  </div>
+</section>
+
+<!-- CLOSE -->
+<section class="closing">
+  <div class="wrap narrow center">
+    <div class="line reveal">Reduce costly surprises.<span class="soft">Strengthen ownership control.</span></div>
+    <div class="center mt-cta reveal" style="margin-top:44px"><a href="#scan" class="btn btn-primary">Run a free baseline scan</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">We do not predict the future. We do not place insurance. We do not sell your data. We do not guarantee savings.</div>
+    <div class="fm">support@kairos.example · founder-led · estimates are labeled, uncertainty stays visible</div>
+  </div>
+</footer>
+
+<script>
+  /* =========================================================================
+     KAIROS — production frontend wiring (design untouched; logic real).
+     Replaces the demo activate() with real backend calls.
+     Set window.KAIROS_API to your backend base URL (or a <meta name="kairos-api">).
+     If the API is unreachable, every step degrades HONESTLY — never fakes data.
+     ========================================================================= */
+  const API = (window.KAIROS_API
+    || document.querySelector('meta[name="kairos-api"]')?.content
+    || "").replace(/\/$/, "");
+
+  const state = { scan: null, email: null, subscriptionId: null };
+
+  const io = new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  async function post(path, body){
+    const r = await fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e.detail||('HTTP '+r.status)); }
+    return r.json();
+  }
+  async function get(path){ const r=await fetch(API+path); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+  function tagHtml(t){
+    const c = t==='VERIFIED'?'t-verified' : t==='VERIFIED~'?'t-approx' : 't-needed';
+    return '<span class="tag '+c+'">'+t+'</span>';
+  }
+  const SDOT = { '\u25cf':'s-active', '\u25d0':'s-prov', '\u25cb':'s-weak', '\u2014':'s-weak' };
+
+  function showLoading(){
+    const body=document.getElementById('scanBody');
+    const steps=['Locating your property in public records\u2026','Checking FEMA flood mapping\u2026','Reviewing assessment and ownership records\u2026','Identifying what deserves ongoing attention\u2026'];
+    body.innerHTML='<div class="loading-wrap"><div class="lbar"></div>'+steps.map((s,i)=>'<div class="lstep" id="ls'+i+'"><span class="s">\u2014</span><span>'+s+'</span></div>').join('')+'</div>';
+    let i=0;
+    const iv=setInterval(()=>{ const el=document.getElementById('ls'+i); if(el){el.classList.add('done');el.querySelector('.s').textContent='\u25cf';} i++; if(i>=steps.length)clearInterval(iv); },500);
+    return iv;
+  }
+
+  async function runScan(){
+    const addr=document.getElementById('addr').value.trim();
+    if(addr.length<6){ document.getElementById('addr').focus(); return; }
+    const body=document.getElementById('scanBody');
+    const iv=showLoading();
+
+    if(!API){
+      clearInterval(iv);
+      body.innerHTML = degraded("Preview mode",
+        "This site isn't connected to the scan engine yet. To run a real scan, set the backend URL (window.KAIROS_API). No result is shown because KAIROS never fabricates a scan.");
+      return;
+    }
+    try{
+      const parsed = parseAddress(addr);
+      const res = await post('/scan/live', { address: parsed.address, zip: parsed.zip, user_email: state.email });
+      clearInterval(iv);
+      if(res.mode === 'manual_needed'){ renderManualNeeded(res); return; }
+      state.scan = res;
+      renderScan(res);
+    }catch(err){
+      clearInterval(iv);
+      body.innerHTML = degraded("Couldn't reach the records right now",
+        "The public-records source didn't respond. Rather than guess, KAIROS shows nothing. Please try again shortly.", err.message);
+    }
+  }
+
+  function parseAddress(s){
+    const m = s.match(/\b(\d{5})\b\s*$/);
+    return { address: s.replace(/,?\s*\d{5}\s*$/, '').trim() || s, zip: m? m[1] : null };
+  }
+
+  function degraded(title, msg, detail){
+    return '<div style="padding:8px 2px">'
+      +'<div class="eyebrow" style="margin-bottom:8px">'+esc(title)+'</div>'
+      +'<div style="color:var(--mist);font-size:15px;line-height:1.65;margin-bottom:14px">'+esc(msg)+'</div>'
+      + (detail? '<div class="mono" style="color:var(--fog);font-size:12px;margin-bottom:14px">'+esc(detail)+'</div>' : '')
+      +'<button class="btn btn-ghost" onclick="runScan()">Try again</button></div>';
+  }
+
+  function renderManualNeeded(res){
+    const body=document.getElementById('scanBody');
+    body.innerHTML='<div style="padding:8px 2px">'
+      +'<div class="eyebrow" style="margin-bottom:8px">Manual verification needed</div>'
+      +'<div style="color:var(--mist);font-size:15px;line-height:1.65;margin-bottom:12px">Automated lookup couldn\'t reach this property\'s public records right now. KAIROS will not fabricate values \u2014 a person verifies the missing facts before your scan is completed. This property needs a hand-checked scan, which we run individually during our private alpha.</div>'
+      +'<div style="color:var(--fog);font-size:13px;line-height:1.6">During alpha, scans for properties like this are completed manually rather than instantly. Reach us at support@kairos.example to have yours run.</div>'
+      +'</div>';
+  }
+
+  function renderScan(res){
+    const body=document.getElementById('scanBody');
+    const cats=(res.results||[]).filter(c=>c.active);
+    const active=cats.filter(c=>c.strength==='\u25cf'), prov=cats.filter(c=>c.strength==='\u25d0');
+    const reco=res.recommendation||{tier:'none',line:''};
+    const name=(res.attributes&&res.attributes.nickname)||'Your property';
+
+    let html='<div class="eyebrow" style="margin-bottom:6px">Baseline scan \u00b7 '+esc(name)+'</div>';
+    if(cats.length===0){
+      html+='<div style="color:var(--mist);font-size:15px;margin:8px 0 16px">We found little that warrants ongoing monitoring on this property. That\'s a real answer \u2014 and we won\'t sell you a plan you don\'t need.</div>';
+      body.innerHTML=html; return;
+    }
+    html+='<div style="color:var(--mist);font-size:15px;margin-bottom:18px">We found <b style="color:var(--bone)">'+cats.length+'</b> operational conditions worth watching \u2014 <span class="s-active">'+active.length+' active</span>, <span class="s-prov">'+prov.length+' provisional</span>.</div>';
+
+    const facts=verifiedFields(res.attributes);
+    if(facts.length){
+      html+='<div class="scan-card" style="margin-bottom:18px"><div class="scan-head" style="padding:12px 18px"><span class="mono" style="font-size:11px;color:var(--fog);letter-spacing:.1em">VERIFIED FIELDS</span></div><div style="padding:6px 18px 12px">';
+      facts.forEach(f=>{ html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)"><span style="color:var(--fog);font-size:13px">'+esc(f.label)+'</span><span style="display:flex;gap:10px;align-items:center"><span class="mono" style="color:var(--bone);font-size:13px">'+esc(String(f.value))+'</span>'+tagHtml(f.prov)+'</span></div>'; });
+      html+='</div></div>';
+    }
+
+    html+='<div class="cats">';
+    cats.forEach(c=>{
+      const sc=SDOT[c.strength]||'s-weak';
+      html+='<div class="cat" onclick="this.classList.toggle(\'open\')"><div class="cat-top"><span class="cat-strength '+sc+'">'+c.strength+'</span><span class="cat-name">'+esc(c.name)+'</span><span style="color:var(--fog)">+</span></div>';
+      html+='<div class="cat-expl">'+esc(c.user_explanation||'')+'</div>';
+      html+='<div class="cat-detail">';
+      if(c.reasons&&c.reasons.length) html+='<div class="cat-line"><div class="k">WHY</div><div class="v">'+esc(c.reasons.join(' '))+'</div></div>';
+      if(c.so_what) html+='<div class="cat-line sowhat"><div class="k">SO WHAT, OPERATIONALLY</div><div class="v">'+esc(c.so_what)+'</div></div>';
+      if(c.needed&&c.needed.length) html+='<div class="cat-line"><div class="k">NEEDED TO SHARPEN</div><div class="v">'+esc(c.needed.join('; '))+' '+tagHtml('NEEDED')+'</div></div>';
+      html+='</div></div>';
+    });
+    html+='</div>';
+
+    if(reco.tier==='none'){
+      html+='<div style="margin-top:24px;padding:22px;background:var(--panel2);border:1px solid var(--line);border-radius:12px"><div style="font-family:var(--serif);font-size:19px;margin-bottom:6px">Recommendation</div><div style="color:var(--mist);font-size:14.5px">'+esc(reco.line)+'</div></div>';
+    }else{
+      html+='<div style="margin-top:24px;padding:22px;background:var(--panel2);border:1px solid var(--line);border-radius:12px">'
+        +'<div style="font-family:var(--serif);font-size:19px;margin-bottom:6px">Recommendation</div>'
+        +'<div style="color:var(--mist);font-size:14.5px;margin-bottom:16px">'+esc(reco.line)+'</div>'
+        + emailCaptureHtml('Keep KAIROS watching this property')
+        +'</div>';
+    }
+    body.innerHTML=html;
+    body.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function verifiedFields(a){
+    if(!a) return [];
+    const map=[['property_type','Property type'],['ownership_type','Owner type'],['year_built','Year built'],['flood_zone','Flood zone'],['bfe_ft','BFE (ft)'],['use_type','Use type'],['entity_status','Entity status']];
+    const out=[];
+    map.forEach(function(pair){ const k=pair[0],label=pair[1],v=a[k]; if(v!==null&&v!==undefined&&v!=='') out.push({label:label,value:v,prov:a[k+'_prov']||'VERIFIED'}); });
+    return out;
+  }
+
+  function emailCaptureHtml(cta){
+    return '<div class="addr-row" style="margin-top:4px">'
+      +'<input class="addr-in" id="emailIn" type="email" placeholder="your email \u2014 to unlock the full scan & monitoring" />'
+      +'<button class="btn btn-primary" onclick="captureEmailThenSubscribe()">'+esc(cta)+'</button>'
+      +'</div><div style="color:var(--fog);font-size:12px;margin-top:9px">No password. Monthly. Cancel anytime. We don\'t sell your data.</div>'
+      +'<div id="flowMsg" style="margin-top:12px"></div>';
+  }
+
+  async function captureEmailThenSubscribe(){
+    const el=document.getElementById('emailIn');
+    const email=el? el.value.trim() : '';
+    const msg=document.getElementById('flowMsg');
+    if(!email||email.indexOf('@')<0){ if(msg)msg.innerHTML='<span style="color:var(--warm);font-size:13px">Please enter a valid email.</span>'; return; }
+    state.email=email;
+    if(!API){ if(msg)msg.innerHTML='<span style="color:var(--mist);font-size:13px">Preview mode \u2014 connect the backend to enable signup.</span>'; return; }
+    if(!state.scan){ if(msg)msg.innerHTML='<span style="color:var(--warm);font-size:13px">Run a scan first.</span>'; return; }
+    try{
+      msg.innerHTML='<span style="color:var(--fog);font-size:13px">Creating your account\u2026</span>';
+      await post('/users',{email:email});
+      const sub=await post('/subscriptions',{user_email:email, scan_id:state.scan.scan_id, plan:'starter'});
+      state.subscriptionId=sub.subscription_id;
+      const co=sub.checkout;
+      if(co.mock){
+        const conf=await post('/billing/confirm',{session_id:co.session_id,user_email:email,scan_id:state.scan.scan_id,plan:'starter'});
+        renderFirstDigest(conf.first_digest, true);
+      }else{
+        msg.innerHTML='<span style="color:var(--mist);font-size:13px">Redirecting to secure checkout\u2026</span>';
+        window.location.href=co.url;
+      }
+    }catch(err){
+      msg.innerHTML='<span style="color:var(--warm);font-size:13px">'+esc(err.message)+'</span>';
+    }
+  }
+
+  function renderFirstDigest(d, mock){
+    const body=document.getElementById('scanBody');
+    if(!d){ body.innerHTML=degraded('Subscription active','Your monitoring is on. Your first digest will arrive shortly.'); return; }
+    const dotClass={'No change':'ok','Change detected':'attn','Awaiting your input':'wait'};
+    const dotChar={'No change':'\u2713','Change detected':'\u26a0','Awaiting your input':'\u25d0'};
+    let html='<div class="eyebrow" style="margin-bottom:6px">The watch is on'+(mock?' \u00b7 preview':'')+'</div>';
+    html+='<div style="font-family:var(--serif);font-size:21px;margin:6px 0 4px;line-height:1.4">KAIROS checked '+d.checked+' operational conditions this month.</div>';
+    html+='<div style="color:var(--mist);font-size:15px;margin-bottom:18px">'+d.stable+' remain stable.'+(d.attention>0?(' '+d.attention+' '+(d.attention===1?'needs':'need')+' your attention.'):' Nothing needs action.')+'</div>';
+    (d.rows||[]).forEach(function(r){ const cl=dotClass[r.status]||'ok', ch=dotChar[r.status]||'\u2713';
+      html+='<div class="drow"><span class="di '+cl+'">'+ch+'</span><div style="flex:1"><div class="dn">'+esc(r.name)+'</div><div class="dl">'+esc(r.line||'')+'</div></div><span class="dstat '+cl+'">'+esc(r.status)+'</span></div>'; });
+    html+='<div class="watched">'+esc(d.watched_note||'')+'</div>';
+    body.innerHTML=html;
+    body.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  window.runScan=runScan; window.captureEmailThenSubscribe=captureEmailThenSubscribe;
+</script>
+</body>
+</html>
