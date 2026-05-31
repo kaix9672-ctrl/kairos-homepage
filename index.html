@@ -229,17 +229,27 @@
   .pilotbar .wrap{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:14px 0;font-size:.95rem;}
   .pilotbar b{color:#fff;} .pilotbar a{color:#bfe3cd;text-decoration:underline;}
   .cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:26px;}
-  .cat{border:1px solid var(--line-soft,rgba(14,19,16,.1));border-radius:14px;padding:18px;background:#fff;}
-  .cat-q{display:block;font-style:italic;color:#5b6b60;font-size:.95rem;margin-bottom:6px;}
-  .cat-t{display:block;font-weight:600;}
+  .cat{border:1px solid rgba(14,19,16,.16);border-radius:14px;padding:18px;background:#fff;}
+  .cat-q{display:block;color:#3a443d;font-size:.95rem;font-weight:500;margin-bottom:6px;}
+  .cat-t{display:block;color:#0E1310;font-weight:700;font-size:1.02rem;}
   .inst-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;}
-  .ig{border:1px solid var(--line-soft,rgba(14,19,16,.1));border-radius:12px;padding:16px;background:#fff;font-weight:600;font-size:.95rem;}
+  .ig{border:1px solid rgba(14,19,16,.16);border-radius:12px;padding:16px;background:#fff;color:#0E1310;font-weight:700;font-size:.95rem;}
   .mon-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:760px;margin:24px auto 0;}
-  .mg{display:flex;align-items:center;gap:12px;border:1px solid var(--line-soft,rgba(14,19,16,.1));border-radius:12px;padding:13px 18px;background:#fff;font-weight:500;}
+  .mg{display:flex;align-items:center;gap:12px;border:1px solid rgba(14,19,16,.16);border-radius:12px;padding:13px 18px;background:#fff;color:#0E1310;font-weight:600;}
   .mg span{width:9px;height:9px;border-radius:50%;border:2px solid #2f6b46;flex:none;}
-  .disc-note{color:#6b7a70;font-size:.88rem;margin-top:22px;max-width:74ch;}
+  .disc-note{color:#46514a;font-size:.88rem;margin-top:22px;max-width:74ch;}
   .ctabar{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;align-items:center;}
   .btn.alt{background:transparent;border:1px solid rgba(14,19,16,.2);color:inherit;}
+
+  /* stacked lead form — high contrast, labeled */
+  .leadform{max-width:460px;}
+  .leadform .fld-l{display:block;font-weight:700;color:#0E1310;font-size:.95rem;margin:16px 0 7px;}
+  .leadform .fld-l:first-child{margin-top:0;}
+  .leadform .fld{width:100%;background:#fff;border:1px solid rgba(14,19,16,.22);border-radius:12px;padding:13px 15px;font:inherit;font-size:1rem;color:#0E1310;}
+  .leadform .fld::placeholder{color:#8B928E;}
+  .leadform .fld:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(31,92,77,.12);}
+  .leadform .fld-btn{width:100%;margin-top:18px;padding:15px;font-size:1rem;}
+  .closing .leadform{margin:0 auto;text-align:left;}
 </style>
 </head>
 <body>
@@ -265,11 +275,13 @@
         <h1 class="reveal d2">The intelligence layer underneath your portfolio.</h1>
     <p class="sub reveal d3">Continuous monitoring across permits, operations, and history — built for owners and operators of complex property.</p>
     <div class="reveal d4">
-      <form class="addr" id="scanForm" onsubmit="return startMonitor(event,'hero')" autocomplete="off">
-        <input type="text" name="address" required placeholder="Address — residential, commercial, or hospitality" aria-label="Property address" />
-        <input type="email" name="email" required placeholder="Email — where we send your findings" aria-label="Email" />
+      <form class="leadform" id="scanForm" onsubmit="return startMonitor(event,'hero')" autocomplete="off">
+        <label class="fld-l" for="scanForm-addr">Property Address</label>
+        <input class="fld" id="scanForm-addr" type="text" name="address" required placeholder="123 Main St, City, ST ZIP" aria-label="Property address" />
+        <label class="fld-l" for="scanForm-email">Where should we send your findings?</label>
+        <input class="fld" id="scanForm-email" type="email" name="email" required placeholder="you@email.com" aria-label="Email" />
         <input type="hidden" name="source" value="homepage-hero" />
-        <button class="btn primary" type="submit" data-event="address_submitted">Monitor this property</button>
+        <button class="btn primary fld-btn" type="submit" data-event="address_submitted">Get Property Intelligence</button>
       </form>
       <div class="ctabar" style="margin-top:16px">
         <a class="btn primary" href="#pilot" data-event="cta_submit_property">Submit a property →</a>
@@ -492,12 +504,14 @@
     <h2 style="margin-top:14px">Start monitoring a property.</h2>
     <p>Enter an address. KAIROS will quietly do the rest.</p>
     
-    <form class="addr" id="scanFormB" onsubmit="return startMonitor(event,'closing')" autocomplete="off">
-      <input type="text" name="address" required placeholder="Address — residential, commercial, or hospitality" aria-label="Property address" />
-      <input type="email" name="email" required placeholder="Email — where we send your findings" aria-label="Email" />
-      <input type="hidden" name="source" value="homepage-closing" />
-      <button class="btn primary" type="submit" data-event="address_submitted">Monitor this property</button>
-    </form>
+    <form class="leadform" id="scanFormB" onsubmit="return startMonitor(event,'closing')" autocomplete="off">
+        <label class="fld-l" for="scanFormB-addr">Property Address</label>
+        <input class="fld" id="scanFormB-addr" type="text" name="address" required placeholder="123 Main St, City, ST ZIP" aria-label="Property address" />
+        <label class="fld-l" for="scanFormB-email">Where should we send your findings?</label>
+        <input class="fld" id="scanFormB-email" type="email" name="email" required placeholder="you@email.com" aria-label="Email" />
+        <input type="hidden" name="source" value="homepage-closing" />
+        <button class="btn primary fld-btn" type="submit" data-event="address_submitted">Get Property Intelligence</button>
+      </form>
     <p class="done" id="scanDoneB">Address received — KAIROS is preparing your first look.</p>
   </div>
 </section>
@@ -516,6 +530,7 @@
     </nav>
   </div>
   <div class="wrap legal">© <span id="yr"></span> KAIROS. All rights reserved. · <a href="#">Privacy</a> · <a href="#">Terms</a></div>
+  <div class="wrap" style="color:#8B928E;font-size:.72rem;letter-spacing:1.5px;padding:6px 0 4px;text-align:center;">KAIROS MAIN v2.1 form-fixed</div>
 </footer>
 
 <!-- MOBILE STICKY CTA -->
@@ -552,7 +567,7 @@
         else { return r.json().then(function(d){ throw d; }); }
       })
       .catch(function(){
-        btn.disabled=false; btn.textContent='Monitor this property';
+        btn.disabled=false; btn.textContent='Get Property Intelligence';
         done.textContent='Something went wrong — please email kai@kairosaiagent.com with the address.';
         done.style.display='block';
       });
